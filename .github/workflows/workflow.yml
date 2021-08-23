@@ -1,0 +1,26 @@
+name: Check update everyday
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Check update
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          build_date1=$(curl -sX GET "https://hub.docker.com/v2/repositories/wangqiru/ttrss/" | grep -oP '(?<="last_updated": ")[^"]*' | cut -d '.' -f1 | awk '{print $1"Z"}')
+          build_date2=$(curl -sX GET "https://hub.docker.com/v2/repositories/zyao89/ttrss/" | grep -oP '(?<="last_updated": ")[^"]*' | cut -d '.' -f1 | awk '{print $1"Z"}')
+          if [ $build_date1 \> $build_date2 ]
+            then
+              docker version
+              echo "${DOCKER_PASSWORD}" | docker login --username ${DOCKER_USERNAME} --password-stdin
+              sh ./build.sh
+            else
+              echo up to date
+          fi
