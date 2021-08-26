@@ -37,6 +37,23 @@ RUN mkdir -p /var/www/plugins.local/mailer_smtp && \
   curl -sL https://git.tt-rss.org/fox/ttrss-mailer-smtp/archive/master.tar.gz | \
   tar xzvpf - --strip-components=1 -C mailer_smtp ttrss-mailer-smtp
 
+# https://git.tt-rss.org/fox/ttrss-names-to-tags.git
+# names_to_tags
+RUN mkdir -p /var/www/plugins.local/names_to_tags && \
+  curl -sL https://git.tt-rss.org/fox/ttrss-names-to-tags/archive/master.tar.gz | \
+  tar xzvpf - --strip-components=1 -C names_to_tags ttrss-names-to-tags
+
+# https://git.tt-rss.org/fox/ttrss-labels-to-tags.git
+# labels_to_tags
+RUN mkdir -p /var/www/plugins.local/labels_to_tags && \
+  curl -sL https://git.tt-rss.org/fox/ttrss-labels-to-tags/archive/master.tar.gz | \
+  tar xzvpf - --strip-components=1 -C labels_to_tags ttrss-labels-to-tags
+
+# https://github.com/alekc/af_refspoof.git
+# af_refspoof
+COPY ./plugins/af_refspoof/* /var/www/plugins.local/af_refspoof/
+
+
 # env
 COPY ./add_custom_config.sh /add_custom_config.sh
 COPY ./ttrss_entrypoint.sh /ttrss_entrypoint.sh
