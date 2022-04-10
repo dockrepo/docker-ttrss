@@ -10,17 +10,48 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Check update
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           build_date1=$(curl -sX GET "https://hub.docker.com/v2/repositories/wangqiru/ttrss/" | grep -oP '(?<="last_updated": ")[^"]*' | cut -d '.' -f1 | awk '{print $1"Z"}')
           build_date2=$(curl -sX GET "https://hub.docker.com/v2/repositories/zyao89/ttrss/" | grep -oP '(?<="last_updated": ")[^"]*' | cut -d '.' -f1 | awk '{print $1"Z"}')
-          if [ $build_date1 \> $build_date2 ]
+          if [ $build_date1 \< $build_date2 ]
             then
-              docker version
-              echo "${DOCKER_PASSWORD}" | docker login --username ${DOCKER_USERNAME} --password-stdin
-              sh ./build.sh
-            else
               echo up to date
+              exit
           fi
+        # 构建镜像，指定镜像名
+      - name: Build image
+        env:
+          IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+      - name: Log into registry
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: echo "${DOCKERHUB_TOKEN}" | docker login --username ${DOCKER_USERNAME} --password-stdin
+      - name: Push image
+        env:
+          IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          # 拼接镜像 id，这个镜像 id 就是在使用 docker 镜像时 pull 后面的名字。
+          IMAGE_ID=$DOCKER_USERNAME/$IMAGE_NAME
+
+          # 将所有的大写字母转为小写
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          # 从 GitHub.ref 中取出版本
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # 从 tag 名字中替换 v 字符
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          # 设置镜像 id 和版本号
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          # 进行 push
+          docker push $IMAGE_ID:$VERSION
+
