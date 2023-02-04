@@ -14,7 +14,7 @@ WORKDIR /var/www/plugins.local
 
 ## highlightjs
 RUN mkdir -p /var/www/plugins.local/highlightjs && \
-  curl -sL https://git.tt-rss.org/fox/ttrss-highlightjs/archive/master.tar.gz | \
+  curl -sL https://git.tt-rss.org/fox/ttrss-highlightjs.git/archive/master.tar.gz | \
   tar xzvpf - --strip-components=1 -C highlightjs ttrss-highlightjs
   
 ## mailer_smtp
