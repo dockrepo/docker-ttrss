@@ -3,9 +3,9 @@ FROM wangqiru/ttrss:latest
 LABEL maintainer="Zyao89 <zyao89@gmail.com>"
 
 # for mail
-RUN apk upgrade --update-cache --available \
-    && apk add php8-openssl
-RUN rm -rf /var/cache/apk/*
+RUN apk upgrade --update --no-cache --available \
+    && apk add php81-openssl \
+    && rm -rf /var/cache/apk/*
 
 # RUN sed -i "s/;extension=openssl/extension=openssl/" /etc/php8/php.ini
 
