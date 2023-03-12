@@ -33,17 +33,17 @@ RUN git clone https://git.tt-rss.org/fox/ttrss-highlightjs.git highlightjs \
 # #TTRSS_SMTP_CA_FILE=
 # # Use custom CA certificate for SSL/TLS secure connections. Only used if TTRSS_SMTP_SKIP_CERT_CHECKS is false.
 # RUN git clone https://git.tt-rss.org/fox/ttrss-mailer-smtp.git
-RUN git clone https://git.tt-rss.org/fox/ttrss-mailer-smtp.git mailer-smtp \
+RUN git clone https://git.tt-rss.org/fox/ttrss-mailer-smtp.git mailer_smtp \
    && chown nobody:nginx -R mailer_smtp/
 
 # https://git.tt-rss.org/fox/ttrss-names-to-tags.git
 # names_to_tags
-RUN git clone https://git.tt-rss.org/fox/ttrss-names-to-tags.git names-to-tags \
+RUN git clone https://git.tt-rss.org/fox/ttrss-names-to-tags.git names_to_tags \
    && chown nobody:nginx -R names_to_tags/
 
 # https://git.tt-rss.org/fox/ttrss-labels-to-tags.git
 # labels_to_tags
-RUN git clone https://git.tt-rss.org/fox/ttrss-labels-to-tags.git labels-to-tags \
+RUN git clone https://git.tt-rss.org/fox/ttrss-labels-to-tags.git labels_to_tags \
    && chown nobody:nginx -R labels_to_tags/
 
 # https://github.com/alekc/af_refspoof.git
