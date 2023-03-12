@@ -49,7 +49,7 @@ RUN git clone https://git.tt-rss.org/fox/ttrss-labels-to-tags.git labels_to_tags
 # https://github.com/alekc/af_refspoof.git
 # af_refspoof
 COPY ./plugins/af_refspoof/* /var/www/plugins.local/af_refspoof/ \
-   && chown nobody:nginx -R af_refspoof/
+   && chown nobody:nginx -R /var/www/plugins.local/af_refspoof/
 
 
 # env
